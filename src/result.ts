@@ -31,9 +31,11 @@ export class Ok<T, E> {
   // add info on how this is really useful for converting a
   // Result<Result<T, E2>, E1>
   // into a Result<T, E2>
-  andThen<U>(f: (t: T) => ResultAsync<U, E>): ResultAsync<U, E>
-  andThen<U>(f: (t: T) => Result<U, E>): Result<U, E>
-  andThen<U>(f: (t: T) => Result<U, E> | ResultAsync<U, E>): Result<U, E> | ResultAsync<U, E> {
+  andThen<U, F>(f: (t: T) => ResultAsync<U, F>): ResultAsync<U, E | F>
+  andThen<U, F>(f: (t: T) => Result<U, F>): Result<U, E | F>
+  andThen<U, F>(
+    f: (t: T) => Result<U, F> | ResultAsync<U, F>,
+  ): Result<U, E | F> | ResultAsync<U, E | F> {
     return f(this.value)
   }
 
@@ -84,11 +86,11 @@ export class Err<T, E> {
     return err(f(this.error))
   }
 
-  andThen<U>(_f: (t: T) => Result<U, E>): Result<U, E>
+  andThen<U, F>(_f: (t: T) => Result<U, F>): Result<U, E | F>
   // Since _f is ignored for Err, the return type is always a Result
-  andThen<U>(_f: (t: T) => ResultAsync<U, E>): Result<U, E>
+  andThen<U, F>(_f: (t: T) => ResultAsync<U, F>): Result<U, E | F>
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  andThen<U>(_f: (t: T) => Result<U, E> | ResultAsync<U, E>): Result<U, E> {
+  andThen<U, F>(_f: (t: T) => Result<U, F> | ResultAsync<U, F>): Result<U, E | F> {
     return err(this.error)
   }
 
